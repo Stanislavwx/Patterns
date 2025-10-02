@@ -1,0 +1,19 @@
+{
+  "actions": [
+    { "type":"create_port","id":0,"lat":100.0,"lon":200.0 },
+    { "type":"create_port","id":1,"lat":101.0,"lon":202.0 },
+    { "type":"create_port","id":2,"lat":110.0,"lon":210.0 },
+
+    { "type":"create_container","id":10,"weight":2500,"at_port":0 },
+    { "type":"create_ship","id":0,"port":0,
+      "totalW":15000,"maxAll":5,"maxHeavy":3,"maxRef":2,"maxLiq":2,"base":1.0 },
+
+    { "type":"load","ship":0,"container":10 },
+
+    { "type":"refuel","ship":0,"amount":30.0 },   
+    { "type":"sail","ship":0,"to_port":2 },       
+
+    { "type":"refuel","ship":0,"amount":300.0 },
+    { "type":"sail","ship":0,"to_port":2 }        
+  ]
+}
