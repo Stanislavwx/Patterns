@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartApp IoT Dashboard</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>SmartApp IoT Dashboard</h1>
+
+    <section class="devices">
+      {% if devices %}
+        {% for d in devices %}
+          <div class="card">
+            <h2>{{ d.get("type","device")|replace("_"," ")|title }} ({{ d.get("device_id","") }})</h2>
+            <p class="muted">З'єднання: {{ d.get("connection","n/a") }}</p>
+            {% if d.get("error") %}
+              <p class="error">Помилка: {{ d.get("error") }}</p>
+            {% endif %}
+
+            {% if d.get("type") == "smart_speaker" %}
+              <ul class="props">
+                <li>Живлення: <b>{{ "ON" if d.get("is_on") else "OFF" }}</b></li>
+                <li>Гучність: <b>{{ d.get("volume") }}</b></li>
+              </ul>
+              <form method="post" action="/toggle_speaker">
+                <button type="submit">Toggle Power</button>
+              </form>
+              <form method="post" action="/set_volume">
+                <label>Гучність (0-100)</label>
+                <input type="number" name="volume" min="0" max="100" value="{{ d.get('volume',50) }}"/>
+                <button type="submit">Set Volume</button>
+              </form>
+            {% elif d.get("type") == "smart_light" %}
+              <ul class="props">
+                <li>Живлення: <b>{{ "ON" if d.get("is_on") else "OFF" }}</b></li>
+                <li>Яскравість: <b>{{ d.get("brightness") }}</b></li>
+              </ul>
+              <form method="post" action="/toggle_light">
+                <button type="submit">Toggle Power</button>
+              </form>
+              <form method="post" action="/set_brightness">
+                <label>Яскравість (0-100)</label>
+                <input type="number" name="brightness" min="0" max="100" value="{{ d.get('brightness',50) }}"/>
+                <button type="submit">Set Brightness</button>
+              </form>
+            {% elif d.get("type") == "smart_curtains" %}
+              <ul class="props">
+                <li>Статус: <b>{{ "OPEN" if d.get("is_open") else "CLOSED" }}</b></li>
+                <li>Позиція: <b>{{ d.get("position") }}</b></li>
+              </ul>
+              <form method="post" action="/toggle_curtains">
+                <button type="submit">Open/Close</button>
+              </form>
+              <form method="post" action="/set_curtains_position">
+                <label>Позиція (0-100)</label>
+                <input type="number" name="position" min="0" max="100" value="{{ d.get('position',0) }}"/>
+                <button type="submit">Set Position</button>
+              </form>
+            {% else %}
+              <p>Невідомий тип пристрою.</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>Пристрої не зареєстровані.</p>
+      {% endif %}
+    </section>
+  </div>
+</body>
+</html>

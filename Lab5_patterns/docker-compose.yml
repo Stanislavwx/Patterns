@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  speaker:
+    build: .
+    container_name: smartapp_speaker
+    command: python -m devices.smart_speaker
+    environment:
+      - BIND_HOST=0.0.0.0
+      - DEVICE_PORT=8001
+    ports:
+      - "8001:8001"
+    restart: unless-stopped
+
+  light:
+    build: .
+    container_name: smartapp_light
+    command: python -m devices.smart_light
+    environment:
+      - BIND_HOST=0.0.0.0
+      - DEVICE_PORT=8002
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+
+  curtains:
+    build: .
+    container_name: smartapp_curtains
+    command: python -m devices.smart_curtains
+    environment:
+      - BIND_HOST=0.0.0.0
+      - DEVICE_PORT=8003
+    ports:
+      - "8003:8003"
+    restart: unless-stopped
+
+  main:
+    build: .
+    container_name: smartapp_main
+    command: uvicorn main:app --host 0.0.0.0 --port 8010
+    environment:
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8010
+      - SPEAKER_HOST=speaker
+      - SPEAKER_PORT=8001
+      - LIGHT_HOST=light
+      - LIGHT_PORT=8002
+      - CURTAINS_HOST=curtains
+      - CURTAINS_PORT=8003
+    ports:
+      - "8010:8010"
+    depends_on:
+      - speaker
+      - light
+      - curtains
+    restart: unless-stopped
