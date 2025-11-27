@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Day Planner</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header>
+        <h1>Smart Day Planner</h1>
+        <p>Adaptive plan powered by weather strategies</p>
+    </header>
+
+    <main>
+        <section class="weather-card">
+            <div>
+                <h2>{{ plan.location }}</h2>
+                <p class="condition">{{ plan.weather.condition }}</p>
+                <p class="temperature">{{ '%.1f'|format(plan.weather.temperature) }}°C</p>
+                {% if plan.weather.description %}
+                <p class="description">{{ plan.weather.description }}</p>
+                {% endif %}
+            </div>
+            <div class="meta">
+                <p>Date: {{ plan.date }}</p>
+                <p>Fetched: {{ plan.weather.fetched_at }}</p>
+            </div>
+        </section>
+
+        <section class="activities">
+            <h3>Today's plan</h3>
+            <ul id="activity-list">
+                {% for activity in plan.activities %}
+                <li>
+                    <span class="name">{{ activity.name }}</span>
+                    <span class="type">{{ activity.type }}</span>
+                    <span class="priority">Priority {{ activity.priority }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="controls">
+            <h3>Refresh plan</h3>
+            <form id="refresh-form">
+                <label>
+                    City:
+                    <input type="text" id="city" name="city" placeholder="Kyiv">
+                </label>
+                <label>
+                    User ID:
+                    <input type="text" id="user" name="user" value="default">
+                </label>
+                <button type="submit">Refresh now</button>
+            </form>
+            <p id="status"></p>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('refresh-form');
+        const statusEl = document.getElementById('status');
+        const activityList = document.getElementById('activity-list');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            statusEl.textContent = 'Refreshing...';
+            const city = document.getElementById('city').value;
+            const user = document.getElementById('user').value || 'default';
+            const params = new URLSearchParams({ user_id: user });
+            if (city) params.append('city', city);
+            try {
+                const response = await fetch(`/plan/refresh?${params.toString()}`, { method: 'POST' });
+                if (!response.ok) throw new Error('Failed to refresh plan');
+                const plan = await response.json();
+                statusEl.textContent = `Updated: ${plan.weather.condition} • ${plan.weather.temperature.toFixed(1)}°C`;
+                renderActivities(plan.activities);
+            } catch (err) {
+                statusEl.textContent = 'Error refreshing plan';
+                console.error(err);
+            }
+        });
+
+        function renderActivities(activities) {
+            activityList.innerHTML = '';
+            activities.forEach((activity) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span class="name">${activity.name}</span>
+                    <span class="type">${activity.type}</span>
+                    <span class="priority">Priority ${activity.priority}</span>
+                `;
+                activityList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    env_file: .env
+    ports:
+      - "8800:8000"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: docker.io/library/mongo:7
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: smart_planner
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+
+  mongo-express:
+    image: docker.io/library/mongo-express:1
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:
