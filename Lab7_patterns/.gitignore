@@ -1,0 +1,22 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Test and coverage
+.pytest_cache/
+.coverage
+
+# IDE/editor
+.idea/
+.vscode/
+
+# OS junk
+.DS_Store
+
+# Generated mission data
+drone_patterns_lab/data/*.json

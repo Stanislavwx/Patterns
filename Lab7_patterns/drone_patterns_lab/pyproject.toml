@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drone-patterns-lab"
+version = "0.1.0"
+description = "Modular drone mission framework demonstrating GoF patterns"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Lab Student" }]
+dependencies = [
+    "fastapi>=0.110.0",
+    "uvicorn>=0.23.0",
+    "pydantic>=2.5.0",
+    "httpx>=0.24.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["drones/tests"]
